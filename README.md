@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensus OEE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head><script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+    // 1. Configuração do Firebase
+    const firebaseConfig = {
+        apiKey: "SUA_API_KEY_FIREBASE",
+        authDomain: "SEU_PROJETO.firebaseapp.com",
+        projectId: "SEU_PROJETO",
+        storageBucket: "SEU_PROJETO.appspot.com",
+        messagingSenderId: "ID",
+        appId: "ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // 2. Configuração da IA (Gemini)
+    const genAI = new GoogleGenerativeAI("SUA_API_KEY_GEMINI");
+
+    // 3. Tornando a função global para o HTML encontrar
+    window.fazerLogin = async (event) => {
+        if(event) event.preventDefault();
+        
+        const email = document.getElementById('login-email')?.value;
+        const pass = document.getElementById('login-pass')?.value;
+
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+            alert("Login efetuado com sucesso!");
+        } catch (error) {
+            console.error("Erro no login:", error.code, error.message);
+            alert("Erro: " + error.message);
+        }
+    };
+
+    // 4. Função de IA integrada
+    window.gerarInsightIA = async (categoria, descricao) => {
+        try {
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const prompt = `Analise esta perda industrial: Categoria: ${categoria}. Descrição: ${descricao}. Dê um conselho de melhoria em 1 frase.`;
+            const result = await model.generateContent(prompt);
+            return result.response.text();
+        } catch (e) {
+            return "Verifique as normas de segurança e padrões operacionais.";
+        }
+    };
+</script>
+<body class="bg-slate-950 text-slate-200 min-h-screen">
+
+    <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950">
+        <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 w-full max-w-sm">
+            <h1 class="text-2xl font-bold mb-6 text-center text-cyan-400">SENSUS OEE</h1>
+            <input type="email" id="login-email" autocomplete="username" placeholder="E-mail" class="w-full mb-4 p-3 bg-slate-950 border border-slate-700 rounded-xl text-white">
+            <input type="password" id="login-pass" autocomplete="current-password" placeholder="Senha" class="w-full mb-6 p-3 bg-slate-950 border border-slate-700 rounded-xl text-white">
+            <button onclick="window.fazerLogin()" class="w-full bg-cyan-500 text-slate-950 font-bold py-3 rounded-xl">ENTRAR</button>
+        </div>
+    </div>
+
+    <div id="app-content" class="hidden">
+        <aside class="w-64 bg-brand-card ...">
+            <button onclick="window.fazerLogout()" class="w-full flex items-center gap-3 px-4 py-2 mt-10 text-red-400 hover:text-red-300">
+                <i class="fa-solid fa-right-from-bracket"></i> Sair do Sistema
+            </button>
+        </aside>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = { /* SEU CONFIG AQUI */ };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Funções Globais
+        window.fazerLogin = () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            signInWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message));
+        };
+
+        window.fazerLogout = () => {
+            signOut(auth).then(() => window.location.reload());
+        };
+
+        // Proteção de Rota
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-content').classList.remove('hidden');
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('app-content').classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
