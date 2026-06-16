@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensus OEE | Painel Industrial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root { --brand-dark: #020617; --brand-card: #0f172a; --brand-accent: #06b6d4; }
+        body { background-color: var(--brand-dark); font-family: 'Inter', sans-serif; color: #e2e8f0; }
+    </style>
+</head>
+<body>
+
+    <!-- TELA DE LOGIN -->
+    <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#020617]">
+        <div class="bg-[#0f172a] p-8 rounded-2xl border border-slate-800 text-center w-80 shadow-2xl">
+            <h2 class="mb-6 font-bold text-lg text-cyan-500 tracking-widest">SENSUS OEE</h2>
+            <input type="password" id="password" placeholder="Digite a senha" class="bg-slate-900 border border-slate-700 p-3 rounded-lg mb-4 w-full text-center text-white outline-none focus:border-cyan-500">
+            <button onclick="checkPassword()" class="bg-cyan-600 hover:bg-cyan-700 transition px-6 py-3 rounded-lg w-full font-bold text-white">ENTRAR</button>
+            <p id="error" class="text-red-500 text-xs mt-4 hidden">Senha incorreta.</p>
+        </div>
+    </div>
+
+    <!-- PAINEL PRINCIPAL -->
+    <div id="dashboard" class="hidden min-h-screen">
+        <header class="bg-[#0f172a] border-b border-slate-800 px-6 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="font-bold text-xl text-white">SENSUS <span class="text-cyan-500">OEE</span></h1>
+                <p class="text-xs text-cyan-500 uppercase">Consultoria Industrial</p>
+            </div>
+            <button onclick="logout()" class="text-xs bg-slate-800 hover:bg-red-900/30 text-slate-400 hover:text-red-400 px-4 py-2 rounded-full transition">
+                <i class="fa-solid fa-right-from-bracket mr-2"></i>Sair
+            </button>
+        </header>
+        <main class="p-8 text-center">
+            <h2 class="text-2xl font-bold">Bem-vindo ao Painel</h2>
+            <p class="text-slate-400 mt-2">O sistema está ativo e operacional.</p>
+        </main>
+    </div>
+
+    <script>
+        const SENHA_MESTRA = "1234";
+
+        function checkPassword() {
+            const pass = document.getElementById('password').value;
+            if(pass === SENHA_MESTRA) { 
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('dashboard').classList.remove('hidden');
+            } else {
+                document.getElementById('error').classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            document.getElementById('password').value = "";
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
