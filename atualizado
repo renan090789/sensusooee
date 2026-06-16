@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensus OEE - Plataforma de Performance Industrial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAv07hNWQ4Z4dL2Iq4Z1hLg05PwBtcSRnY",
+            authDomain: "sensusoee-ebea2.firebaseapp.com",
+            projectId: "sensusoee-ebea2",
+            storageBucket: "sensusoee-ebea2.firebasestorage.app",
+            messagingSenderId: "768590307204",
+            appId: "1:768590307204:web:7209ab20e865824bcb87d1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        window.fazerLogin = () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            signInWithEmailAndPassword(auth, email, pass)
+                .catch(err => alert("Erro ao entrar: " + err.message));
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            const loginScreen = document.getElementById('login-screen');
+            const appContent = document.getElementById('app-content');
+            if (user) {
+                loginScreen.classList.add('hidden');
+                appContent.classList.remove('hidden');
+            } else {
+                loginScreen.classList.remove('hidden');
+                appContent.classList.add('hidden');
+            }
+        });
+    </script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { brand: { dark: '#020617', card: '#0f172a', border: '#1e293b', accent: '#06b6d4', accentGlow: 'rgba(6, 182, 212, 0.15)', green: '#22c55e' } } } } }
+    </script>
+    <style>
+        body { background-color: #020617; font-family: 'Inter', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen">
+
+    <div id="login-screen" class="fixed inset-0 flex items-center justify-center bg-slate-950 z-[9999]">
+        <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 w-full max-w-sm shadow-2xl">
+            <h1 class="text-2xl font-bold mb-6 text-center text-cyan-400">SENSUS OEE</h1>
+            <input type="email" id="login-email" placeholder="E-mail" class="w-full mb-4 p-3 bg-slate-950 border border-slate-700 rounded-xl outline-none focus:border-cyan-500 text-white">
+            <input type="password" id="login-pass" placeholder="Senha" class="w-full mb-6 p-3 bg-slate-950 border border-slate-700 rounded-xl outline-none focus:border-cyan-500 text-white">
+            <button onclick="fazerLogin()" class="w-full bg-cyan-500 text-slate-950 font-bold py-3 rounded-xl hover:bg-cyan-400 transition">ENTRAR</button>
+        </div>
+    </div>
+
+    <div id="app-content" class="hidden">
+        <header class="bg-brand-card border-b border-brand-border px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-500 flex items-center justify-center text-brand-dark text-xl font-bold">RC</div>
+                <div>
+                    <h1 class="font-bold text-xl text-white">SENSUS OEE</h1>
+                    <p class="text-xs text-cyan-400 uppercase font-semibold">Performance & Liderança</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex flex-1 flex-col md:flex-row min-h-screen">
+            <aside class="w-full md:w-64 bg-brand-card border-r border-brand-border p-4">
+                <p class="text-slate-400">Bem-vindo ao sistema protegido.</p>
+                </aside>
+            <main class="flex-1 p-8">
+                </main>
+        </div>
+    </div>
+
+</body>
+</html>
