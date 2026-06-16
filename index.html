@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="app-meta-title">Sensus OEE - Plataforma de Performance Industrial</title>
+    <!-- Tailwind CSS para Estilização Rápida e Moderna -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts para Tipografia Premium -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome para Ícones de Engenharia -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Urbanist', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#020617',
+                            card: '#0f172a',
+                            border: '#1e293b',
+                            accent: '#06b6d4',
+                            accentGlow: 'rgba(6, 182, 212, 0.15)',
+                            green: '#22c55e',
+                            red: '#ef4444',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #020617;
+            font-family: 'Inter', sans-serif;
+        }
+        .glow-effect {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+        }
+        /* Variáveis CSS dinâmicas para o White-Label */
+        :root {
+            --primary-accent: #06b6d4;
+            --primary-glow: rgba(6, 182, 212, 0.15);
+        }
+        .custom-accent-text { color: var(--primary-accent); }
+        .custom-accent-bg { background-color: var(--primary-accent); }
+        .custom-accent-border { border-color: var(--primary-accent); }
+        .custom-accent-glow { box-shadow: 0 0 15px var(--primary-glow); }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col">
+
+    <!-- CABEÇALHO DA PLATAFORMA -->
+    <header class="bg-brand-card border-b border-brand-border px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <div id="app-logo" class="w-10 h-10 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-500 flex items-center justify-center text-brand-dark text-xl font-bold font-display">
+                RC
+            </div>
+            <div>
+                <h1 id="app-header-title" class="font-display font-bold text-xl tracking-wider text-white">SENSUS OEE</h1>
+                <p id="app-header-subtitle" class="text-xs custom-accent-text uppercase font-semibold tracking-widest">Performance & Liderança</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <span class="text-sm bg-brand-border px-3 py-1.5 rounded-full text-slate-300 flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-brand-green animate-pulse"></span>
+                Chão de Fábrica Ativo
+            </span>
+        </div>
+    </header>
+
+    <!-- LAYOUT PRINCIPAL -->
+    <div class="flex flex-1 flex-col md:flex-row min-h-[calc(100vh-73px)]">
+        
+        <!-- NAVEGAÇÃO LATERAL (SIDEBAR) -->
+        <aside class="w-full md:w-64 bg-brand-card border-r border-brand-border p-4 flex flex-col justify-between">
+            <nav class="space-y-1">
+                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition text-brand-accent bg-brand-accentGlow">
+                    <i class="fa-solid fa-chart-line text-base"></i> Painel de Controlo
+                </button>
+                <button onclick="switchTab('registar')" id="btn-registar" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-clock-rotate-left text-base"></i> Registar Perda
+                </button>
+                <button onclick="switchTab('maquinas')" id="btn-maquinas" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-gears text-base"></i> Gerir Máquinas
+                </button>
+                <button onclick="switchTab('planeamento')" id="btn-planeamento" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-calendar-days text-base"></i> Planeamento de Turnos
+                </button>
+                <button onclick="switchTab('comparativo')" id="btn-comparativo" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-scale-balanced text-base"></i> Comparativo OEE
+                </button>
+                <button onclick="switchTab('financeiro')" id="btn-financeiro" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-dollar-sign text-base text-emerald-400"></i> Custo das Perdas
+                </button>
+                <button onclick="switchTab('acoes')" id="btn-acoes" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-shield-heart text-base"></i> Análise de Causa (5 Porquês)
+                </button>
+                <button onclick="switchTab('historico')" id="btn-historico" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-list-check text-base"></i> Histórico & Exportar
+                </button>
+
+                <button onclick="switchTab('saas')" id="btn-saas" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition text-slate-400 hover:text-white hover:bg-slate-800 border border-dashed border-cyan-500/30">
+                    <i class="fa-solid fa-comments-dollar text-base text-cyan-400"></i> Portal de Vendas
+                </button>
+            </nav>
+            <div class="mt-6 pt-4 border-t border-brand-border text-center md:text-left">
+                <p class="text-xs text-slate-500">Licenciado por</p>
+                <p class="text-sm font-semibold text-slate-300" id="sidebar-vendor">Renan Carvalho</p>
+                <p class="text-xs custom-accent-text" id="sidebar-sub-vendor">Consultoria Industrial</p>
+            </div>
+        </aside>
+
+        <!-- ÁREA DE CONTEÚDO PRINCIPAL -->
+        <main class="flex-1 p-6 md:p-8 overflow-y-auto max-w-7xl mx-auto w-full">
+
+            <!-- TAB: PAINEL DE CONTROLO (DASHBOARD) -->
+            <section id="tab-dashboard" class="tab-content space-y-8">
+                
+                <!-- SELETOR DE MÁQUINA PILOTO -->
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-brand-card p-5 rounded-2xl border border-brand-border">
+                    <div class="space-y-1">
+                        <h2 class="font-display font-bold text-2xl text-white">Painel de Eficiência Geral</h2>
+                        <p class="text-slate-400 text-sm">Monitorize os indicadores de produtividade e as perdas associadas em tempo real.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                        <!-- STATUS OPERACIONAL DINÂMICO DO ATIVO -->
+                        <div id="machine-status-badge" class="px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2">
+                            <!-- Atualizado por JS -->
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <label for="dashboard-machine-select" class="text-sm font-medium text-slate-400">Filtrar Ativo:</label>
+                            <select id="dashboard-machine-select" onchange="calculateAllMetrics()" class="bg-brand-dark border border-brand-border text-white px-4 py-2 rounded-xl focus:border-brand-accent outline-none">
+                                <!-- Preenchido via JavaScript -->
+                            </select>
+                        </div>
+
+                        <!-- BOTÃO DE REGISTO RÁPIDO "TURNO PERFEITO - TUDO OK" -->
+                        <button onclick="quickRegisterPerfectRun()" class="px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-brand-dark border border-emerald-500/20 rounded-xl transition text-sm font-semibold flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check animate-pulse"></i> Registar Turno Perfeito (Tudo OK)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- GAUGES DE PERFORMANCE (OEE + TRIPÉ) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- OEE CARD -->
+                    <div class="bg-brand-card p-6 rounded-2xl border border-brand-border flex flex-col items-center justify-center text-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-b from-brand-accent/5 to-transparent pointer-events-none"></div>
+                        <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">OEE Geral</h3>
+                        <div class="relative w-36 h-36 flex items-center justify-center">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="40" stroke="#1e293b" stroke-width="8" fill="transparent" />
+                                <circle id="oee-progress" cx="50" cy="50" r="40" stroke="var(--primary-accent)" stroke-width="8" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" />
+                            </svg>
+                            <span id="oee-value" class="absolute font-display font-bold text-3xl text-white">0%</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-4">Benchmark Mundial: <span class="text-brand-green font-bold">85%</span></p>
+                    </div>
+
+                    <!-- DISPONIBILIDADE -->
+                    <div class="bg-brand-card p-6 rounded-2xl border border-brand-border flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Disponibilidade</h3>
+                                <i class="fa-solid fa-clock custom-accent-text"></i>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-4">Relação de tempo produtivo útil</p>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-end mb-2">
+                                <span id="availability-value" class="font-display font-bold text-4xl text-white">0%</span>
+                                <span class="text-xs text-slate-500">Meta: 90%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div id="availability-bar" class="custom-accent-bg h-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DESEMPENHO -->
+                    <div class="bg-brand-card p-6 rounded-2xl border border-brand-border flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Desempenho</h3>
+                                <i class="fa-solid fa-gauge-high custom-accent-text"></i>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-4">Relação de velocidade de ciclo</p>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-end mb-2">
+                                <span id="performance-value" class="font-display font-bold text-4xl text-white">0%</span>
+                                <span class="text-xs text-slate-500">Meta: 95%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div id="performance-bar" class="custom-accent-bg h-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QUALIDADE -->
+                    <div class="bg-brand-card p-6 rounded-2xl border border-brand-border flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Qualidade</h3>
+                                <i class="fa-solid fa-circle-check custom-accent-text"></i>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-4">Relação de peças conformes</p>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-end mb-2">
+                                <span id="quality-value" class="font-display font-bold text-4xl text-white">0%</span>
+                                <span class="text-xs text-slate-500">Meta: 99%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div id="quality-bar" class="custom-accent-bg h-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PARETO DE PERDAS E INSIGHTS DA LIDERANÇA -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- PARETO DE PERDAS -->
+                    <div class="bg-brand-card p-6 rounded-2xl border border-brand-border lg:col-span-2 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-display font-bold text-xl text-white mb-2">Análise de Pareto: As 6 Grandes Perdas</h3>
+                            <p class="text-sm text-slate-400 mb-6">Identifique visualmente as maiores perdas de eficiência da sua máquina piloto.</p>
+                        </div>
+                        
+                        <div class="space-y-4" id="pareto-container">
+                            <!-- Gerado Dinamicamente por JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- INSIGHTS DE CONSULTORIA INDUSTRIAL (RENAN CARVALHO) -->
+                    <div class="bg-brand-card p-6 rounded-2xl border border-brand-border flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-full bg-brand-accentGlow flex items-center justify-center text-brand-accent text-lg">
+                                    <i class="fa-solid fa-lightbulb"></i>
+                                </div>
+                                <h3 class="font-display font-bold text-lg text-white">Plano de Ação Sugerido</h3>
+                            </div>
+                            <div class="space-y-4" id="insights-list">
+                                <!-- Sugestões dinâmicas baseadas na pior métrica de OEE -->
+                            </div>
+                        </div>
+                        <div class="mt-6 p-4 rounded-xl bg-slate-900 border border-brand-border">
+                            <p class="text-xs text-slate-400 italic">"Lembre-se: O que não se mede, não se melhora. O foco do programa de perdas é capacitar as equipas no Gemba."</p>
+                            <p class="text-xs custom-accent-text font-semibold mt-2" id="insight-sign-name">— Renan Carvalho</p>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB: REGISTAR PERDA -->
+            <section id="tab-registar" class="tab-content hidden space-y-6">
+                <div class="bg-brand-card p-6 rounded-2xl border border-brand-border max-w-2xl mx-auto">
+                    <h2 class="font-display font-bold text-2xl text-white mb-2">Registar Produção & Ocorrências</h2>
+                    <p class="text-sm text-slate-400 mb-6">Registe os eventos de paragem ou insira uma produção ótima para alimentar e corrigir os indicadores de OEE.</p>
+
+                    <form id="loss-form" onsubmit="handleLossSubmit(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-400 mb-1">Selecione o Ativo / Máquina</label>
+                                <select id="form-machine" required class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2.5 rounded-xl outline-none focus:border-brand-accent">
+                                    <!-- Preenchido via JavaScript -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-400 mb-1">Categoria de Perda</label>
+                                <select id="form-category" required onchange="toggleFormInputs()" class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2.5 rounded-xl outline-none focus:border-brand-accent">
+                                    <option value="Quebra">Quebra (Disponibilidade)</option>
+                                    <option value="Setup">Setup e Ajustes (Disponibilidade)</option>
+                                    <option value="Microparada">Microparagens (Performance)</option>
+                                    <option value="Velocidade">Velocidade Reduzida (Performance)</option>
+                                    <option value="Refugo">Peças Rejeitadas / Refugo (Qualidade)</option>
+                                    <option value="Startup">Perdas de Startup (Qualidade)</option>
+                                    <option value="Normal">Produção Normal (100% Eficiência)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div id="div-duration">
+                                <label class="block text-sm font-medium text-slate-400 mb-1">Duração (Minutos)</label>
+                                <input type="number" id="form-duration" min="0" value="10" class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2.5 rounded-xl outline-none focus:border-brand-accent">
+                            </div>
+                            <div id="div-pieces" class="hidden">
+                                <label class="block text-sm font-medium text-slate-400 mb-1">Peças Rejeitadas (Unidades)</label>
+                                <input type="number" id="form-pieces" min="0" value="0" class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2.5 rounded-xl outline-none focus:border-brand-accent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-400 mb-1">Peças Boas Produzidas no Turno</label>
+                                <input type="number" id="form-good-pieces" min="0" value="100" required class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2.5 rounded-xl outline-none focus:border-brand-accent">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-400 mb-1">Descrição / Causa Provável</label>
+                            <textarea id="form-description" placeholder="Ex: Sensor ótico sujo, troca de molde, quebra de engrenagem..." rows="3" class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2.5 rounded-xl outline-none focus:border-brand-accent"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full bg-brand-accent hover:bg-cyan-500 text-brand-dark font-bold py-3 px-6 rounded-xl transition flex items-center justify-center gap-2 custom-accent-bg">
+                            <i class="fa-solid fa-check"></i> Submeter Registo de Eficiência
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB: GERIR MÁQUINAS -->
+            <section id="tab-maquinas" class="tab-content hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- ADICIONAR MÁQUINA -->
+                    <div class="bg-brand-card p-6 rounded-2xl border border-brand-border">
+                        <h2 class="font-display font-bold text-xl text-white mb-2">Configurar Nova Máquina</h2>
+                        <p class="text-sm text-slate-400 mb-6">Registe os equipamentos piloto para o programa de monitoramento individual.</p>
+
+                        <form id="machine-form" onsubmit="handleMachineSubmit(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-400 mb-1">Nome da Máquina / Ativo</label>
+                                <input type="text" id="machine-name" placeholder="Ex: Torno CNC Mazak" required class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2.5 rounded-xl outline-none focus:border-brand-accent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-400 mb-1">Capacidade Nominal (Peças por minuto)</label>
+                                <input type="number" id="machine-capacity" min="1" step="1" placeholder="Ex: 10" required class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2.5 rounded-xl outline-none focus:border-brand-accent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-400 mb-1">Tempo Total do Turno Planeado (Minutos)</label>
+                                <input type="number" id="machine-shift-time" min="1" value="480" placeholder="Ex: 480 para turnos de 8 horas" required class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2.5 rounded-xl outline-none focus:border-brand-accent">
+                            </div>
+                            <button type="submit" class="w-full bg-brand-accent hover:bg-cyan-500 text-brand-dark font-bold py-3 px-6 rounded-xl transition flex items-center justify-center gap-2 custom-accent-bg">
+                                <i class="fa-solid fa-plus"></i> Guardar Configuração
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- LISTA DE MÁQUINAS REGISTADAS -->
+                    <div class="bg-brand-card p-6 rounded-2xl border border-brand-border lg:col-span-2">
+                        <h2 class="font-display font-bold text-xl text-white mb-2">Máquinas Cadastradas no Programa</h2>
+                        <p class="text-sm text-slate-400 mb-6">Lista de equipamentos em avaliação individual de eficiência.</p>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-brand-border">
+                                        <th class="py-3 text-sm text-brand-accent font-semibold">Máquina</th>
+                                        <th class="py-3 text-sm text-brand-accent font-semibold">Capacidade</th>
+                                        <th class="py-3 text-sm text-brand-accent font-semibold">Tempo Turno</th>
+                                        <th class="py-3 text-sm text-brand-accent font-semibold text-right">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="machine-table-body" class="divide-y divide-brand-border">
+                                    <!-- Preenchido via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: PLANEAMENTO DE TURNOS & PARAGENS PLANEADAS -->
+            <section id="tab-planeamento" class="tab-content hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- ADICIONAR PARAGEM PROGRAMADA -->
+                    <div class="bg-brand-card p-6 rounded-2xl border border-brand-border">
+                        <h2 class="font-display font-bold text-xl text-white mb-2">Registar Evento Planeado</h2>
+                        <p class="text-sm text-slate-400 mb-6">Insira paragens que não devem reduzir o seu OEE (almoço, manutenção preventiva, reuniões).</p>
+
+                        <form id="planned-stop-form" onsubmit="handlePlannedStopSubmit(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-400 mb-1">Selecione o Ativo</label>
+                                <select id="planned-stop-machine" required class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2.5 rounded-xl outline-none focus:border-brand-accent">
+                                    <!-- Preenchido via JavaScript -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-400 mb-1">Tipo de Evento Planeado</label>
+                                <select id="planned-stop-type" required class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2.5 rounded-xl outline-none focus:border-brand-accent">
+                                    <option value="Refeição">Almoço / Jantar (Paragem Programada)</option>
+                                    <option value="Manutenção Preventiva">Manutenção Preventiva Planeada</option>
+                                    <option value="DDS/Reunião">DDS / Reunião Diária de Turno</option>
+                                    <option value="Higienização">Limpeza / Higienização Programada</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-400 mb-1">Duração do Evento (Minutos)</label>
+                                <input type="number" id="planned-stop-duration" min="1" value="30" required class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2.5 rounded-xl outline-none focus:border-brand-accent">
+                            </div>
+                            <button type="submit" class="w-full bg-brand-accent hover:bg-cyan-500 text-brand-dark font-bold py-3 px-6 rounded-xl transition flex items-center justify-center gap-2 custom-accent-bg">
+                                <i class="fa-solid fa-calendar-plus"></i> Descontar do Turno
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- LISTA DE PARAGENS PLANEADAS -->
+                    <div class="bg-brand-card p-6 rounded-2xl border border-brand-border lg:col-span-2">
+                        <h2 class="font-display font-bold text-xl text-white mb-2">Eventos Planeados Excluídos do OEE</h2>
+                        <p class="text-sm text-slate-400 mb-6">Estes tempos são subtraídos do Tempo Calendário para obter o tempo de carregamento correto.</p>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-brand-border">
+                                        <th class="py-3 text-sm text-brand-accent font-semibold">Ativo</th>
+                                        <th class="py-3 text-sm text-brand-accent font-semibold">Tipo</th>
+                                        <th class="py-3 text-sm text-brand-accent font-semibold">Duração</th>
+                                        <th class="py-3 text-sm text-brand-accent font-semibold text-right">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="planned-stops-table-body" class="divide-y divide-brand-border">
+                                    <!-- Preenchido via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: COMPARATIVO MULTIMÁQUINAS -->
+            <section id="tab-comparativo" class="tab-content hidden space-y-6">
+                <div class="bg-brand-card p-6 rounded-2xl border border-brand-border">
+                    <h2 class="font-display font-bold text-2xl text-white mb-2">Benchmarking Interno de OEE</h2>
+                    <p class="text-sm text-slate-400 mb-6">Compare a eficiência de todas as máquinas configuradas de forma consolidada para tomada de decisão.</p>
+
+                    <div class="space-y-6" id="comparison-bars-container">
+                        <!-- Preenchido dinamicamente com as barras de OEE de cada máquina cadastrada -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: CUSTO FINANCEIRO DAS PERDAS -->
+            <section id="tab-financeiro" class="tab-content hidden space-y-6">
+                <div class="bg-brand-card p-6 rounded-2xl border border-brand-border">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <div>
+                            <h2 class="font-display font-bold text-2xl text-white">Impacto Financeiro das Perdas</h2>
+                            <p class="text-sm text-slate-400">Traduza as ineficiências operacionais de OEE diretamente em impacto financeiro real.</p>
+                        </div>
+                    </div>
+
+                    <!-- CONFIGURAÇÃO DE CUSTOS -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 p-5 bg-brand-dark rounded-xl border border-brand-border">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Custo de Paragem Planeada (por hora)</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2.5 text-slate-500 text-sm font-semibold">R$</span>
+                                <input type="number" id="cost-down-hour" value="150" onchange="calculateFinancialWaste()" class="w-full bg-brand-card border border-brand-border text-white pl-10 pr-4 py-2 rounded-xl outline-none focus:border-brand-accent">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Custo de Performance Reduzida (por hora)</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2.5 text-slate-500 text-sm font-semibold">R$</span>
+                                <input type="number" id="cost-speed-hour" value="80" onchange="calculateFinancialWaste()" class="w-full bg-brand-card border border-brand-border text-white pl-10 pr-4 py-2 rounded-xl outline-none focus:border-brand-accent">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Custo por Peça Refugada (unidade)</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2.5 text-slate-500 text-sm font-semibold">R$</span>
+                                <input type="number" id="cost-scrap-unit" value="12" onchange="calculateFinancialWaste()" class="w-full bg-brand-card border border-brand-border text-white pl-10 pr-4 py-2 rounded-xl outline-none focus:border-brand-accent">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CARDS DE DESPERDÍCIO POR CATEGORIA -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="financial-waste-cards">
+                        <!-- Preenchido via JavaScript -->
+                    </div>
+
+                    <!-- TOTALIZADOR -->
+                    <div class="mt-6 p-6 bg-brand-dark rounded-xl border border-brand-accent/30 text-center">
+                        <h4 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Custo Total Acumulado de Ineficiência</h4>
+                        <span id="total-financial-loss" class="font-display font-bold text-5xl text-red-500 filter drop-shadow-[0_0_8px_rgba(239,68,68,0.2)]">R$ 0,00</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: ANÁLISE DE CAUSA RAIZ / 5 PORQUÊS -->
+            <section id="tab-acoes" class="tab-content hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- DETALHE DO REGISTO DOS 5 PORQUÊS -->
+                    <div class="bg-brand-card p-6 rounded-2xl border border-brand-border lg:col-span-1 space-y-4">
+                        <h2 class="font-display font-bold text-xl text-white">Análise 5 Porquês (MASP)</h2>
+                        <p class="text-sm text-slate-400">Escolha uma ocorrência para analisar e encontrar a causa raiz.</p>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-400 mb-1">Selecione a Perda Ativa</label>
+                            <select id="why-loss-select" onchange="loadWhyAnalysis()" class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2.5 rounded-xl outline-none focus:border-brand-accent">
+                                <!-- Preenchido dinamicamente via JS com eventos de paragem cadastrados -->
+                            </select>
+                        </div>
+
+                        <form id="why-form" onsubmit="handleWhySubmit(event)" class="space-y-4 hidden">
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">1º Porquê? (Sintoma)</label>
+                                    <input type="text" id="why-1" required placeholder="Porquê parou?" class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2 rounded-xl outline-none focus:border-brand-accent text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">2º Porquê?</label>
+                                    <input type="text" id="why-2" required placeholder="Porquê aconteceu o 1º porquê?" class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2 rounded-xl outline-none focus:border-brand-accent text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">3º Porquê?</label>
+                                    <input type="text" id="why-3" required placeholder="Porquê aconteceu o 2º porquê?" class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2 rounded-xl outline-none focus:border-brand-accent text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">4º Porquê?</label>
+                                    <input type="text" id="why-4" required placeholder="Porquê aconteceu o 3º porquê?" class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2 rounded-xl outline-none focus:border-brand-accent text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">5º Porquê? (Causa Raiz)</label>
+                                    <input type="text" id="why-5" required placeholder="Causa raiz real identificada" class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2 rounded-xl outline-none focus:border-brand-accent text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Plano de Ação Corretiva</label>
+                                    <textarea id="why-action" required placeholder="Qual ação definitiva será tomada para evitar reincidência?" rows="2" class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2 rounded-xl outline-none focus:border-brand-accent text-sm"></textarea>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full bg-brand-accent hover:bg-cyan-500 text-brand-dark font-bold py-2.5 px-4 rounded-xl transition text-sm flex items-center justify-center gap-2 custom-accent-bg">
+                                <i class="fa-solid fa-shield"></i> Guardar Causa Raiz
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- LISTA DE ANÁLISES JÁ REALIZADAS -->
+                    <div class="bg-brand-card p-6 rounded-2xl border border-brand-border lg:col-span-2">
+                        <h2 class="font-display font-bold text-xl text-white mb-2">Registo de Causas Raízes Resolvidas</h2>
+                        <p class="text-sm text-slate-400 mb-6">Mapeamento de desvios investigados por MASP com as suas respetivas contra-medidas organizacionais.</p>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-brand-border">
+                                        <th class="py-3 text-sm text-brand-accent font-semibold">Paragem</th>
+                                        <th class="py-3 text-sm text-brand-accent font-semibold">Causa Raiz (5º Porquê)</th>
+                                        <th class="py-3 text-sm text-brand-accent font-semibold">Contra-medida Definida</th>
+                                        <th class="py-3 text-sm text-brand-accent font-semibold text-right">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="why-table-body" class="divide-y divide-brand-border text-sm">
+                                    <!-- Preenchido via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: HISTÓRICO DE EVENTOS & EXPORTAÇÃO -->
+            <section id="tab-historico" class="tab-content hidden space-y-6">
+                <div class="bg-brand-card p-6 rounded-2xl border border-brand-border">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <div>
+                            <h2 class="font-display font-bold text-xl text-white">Histórico & Exportação de Dados</h2>
+                            <p class="text-sm text-slate-400">Rastreabilidade total e opções de backup para integração com Excel ou Power BI.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="exportToCSV()" class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white px-4 py-2 rounded-xl transition text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-file-csv"></i> Exportar CSV (Excel)
+                            </button>
+                            <button onclick="clearAllData()" class="bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-4 py-2 rounded-xl transition text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-trash-can"></i> Limpar Histórico
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-brand-border">
+                                    <th class="py-3 text-sm text-brand-accent font-semibold">Ativo</th>
+                                    <th class="py-3 text-sm text-brand-accent font-semibold">Categoria</th>
+                                    <th class="py-3 text-sm text-brand-accent font-semibold">Métrica Afetada</th>
+                                    <th class="py-3 text-sm text-brand-accent font-semibold">Duração / Unidades</th>
+                                    <th class="py-3 text-sm text-brand-accent font-semibold">Causa/Descrição</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-table-body" class="divide-y divide-brand-border">
+                                <!-- Preenchido via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: PORTAL DE VENDAS & WHITE-LABEL -->
+            <section id="tab-saas" class="tab-content hidden space-y-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    <!-- CONFIGURADOR WHITE-LABEL -->
+                    <div class="bg-brand-card p-6 rounded-2xl border border-brand-border lg:col-span-1 space-y-6">
+                        <div>
+                            <h2 class="font-display font-bold text-xl text-white mb-1">Simulador White-Label</h2>
+                            <p class="text-xs text-slate-400">Personalize o sistema com a marca e cores do seu cliente de consultoria antes da apresentação.</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Nome do Sistema (SaaS)</label>
+                                <input type="text" id="setup-app-title" value="SENSUS OEE" oninput="updateWhiteLabel()" class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2 rounded-xl outline-none focus:border-brand-accent text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Slogan / Subtítulo</label>
+                                <input type="text" id="setup-app-subtitle" value="Performance & Liderança" oninput="updateWhiteLabel()" class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2 rounded-xl outline-none focus:border-brand-accent text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Iniciais do Logótipo (2 Letras)</label>
+                                <input type="text" id="setup-app-initials" value="RC" maxlength="2" oninput="updateWhiteLabel()" class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2 rounded-xl outline-none focus:border-brand-accent text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Nome do Licenciador (Seu Nome)</label>
+                                <input type="text" id="setup-app-vendor" value="Renan Carvalho" oninput="updateWhiteLabel()" class="w-full bg-brand-dark border border-brand-border text-white px-4 py-2 rounded-xl outline-none focus:border-brand-accent text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Cor de Destaque da Marca</label>
+                                <div class="grid grid-cols-4 gap-2">
+                                    <button onclick="changeThemeColor('#06b6d4', 'rgba(6, 182, 212, 0.15)')" class="w-full h-8 rounded-lg bg-[#06b6d4]" title="Ciano Sensus"></button>
+                                    <button onclick="changeThemeColor('#10b981', 'rgba(16, 185, 129, 0.15)')" class="w-full h-8 rounded-lg bg-[#10b981]" title="Verde Esmeralda"></button>
+                                    <button onclick="changeThemeColor('#f59e0b', 'rgba(245, 158, 11, 0.15)')" class="w-full h-8 rounded-lg bg-[#f59e0b]" title="Amarelo Alerta"></button>
+                                    <button onclick="changeThemeColor('#6366f1', 'rgba(99, 102, 241, 0.15)')" class="w-full h-8 rounded-lg bg-[#6366f1]" title="Roxo Premium"></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-brand-border">
+                            <button onclick="saveWhiteLabelConfig()" class="w-full bg-brand-accent hover:bg-cyan-500 text-brand-dark font-bold py-2.5 px-4 rounded-xl transition text-sm flex items-center justify-center gap-2 custom-accent-bg">
+                                <i class="fa-solid fa-floppy-disk"></i> Salvar Layout Padrão
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- PLANOS DE LICENCIAMENTO (MONETIZAÇÃO) -->
+                    <div class="bg-brand-card p-6 rounded-2xl border border-brand-border lg:col-span-2 space-y-6">
+                        <div>
+                            <h2 class="font-display font-bold text-2xl text-white mb-1">Modelo de Negócios & Comercialização</h2>
+                            <p class="text-sm text-slate-400">Sugestão de empacotamento do software para comercializar junto de clientes de consultoria ou indústrias.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- PLANO LICENÇA PRO -->
+                            <div class="bg-brand-dark p-5 rounded-xl border border-brand-border hover:border-brand-accent transition flex flex-col justify-between">
+                                <div class="space-y-2">
+                                    <span class="text-xs font-bold text-brand-accent bg-brand-accentGlow px-2 py-1 rounded">MAIS VENDIDO</span>
+                                    <h3 class="font-display font-bold text-lg text-white">Licença Consultoria Pro</h3>
+                                    <p class="text-xs text-slate-400">Para consultores seniores que implementam programas de melhoria de OEE.</p>
+                                    <ul class="text-xs text-slate-300 space-y-1.5 pt-2">
+                                        <li><i class="fa-solid fa-check text-brand-green mr-1"></i> Dashboard OEE completo</li>
+                                        <li><i class="fa-solid fa-check text-brand-green mr-1"></i> Até 5 Máquinas Ativas</li>
+                                        <li><i class="fa-solid fa-check text-brand-green mr-1"></i> White-label Personalizado do Cliente</li>
+                                        <li><i class="fa-solid fa-check text-brand-green mr-1"></i> Exportação ilimitada Excel</li>
+                                    </ul>
+                                </div>
+                                <div class="pt-4 border-t border-brand-border mt-4">
+                                    <p class="text-xs text-slate-500">Preço Sugerido Mensal</p>
+                                    <p class="font-display font-bold text-xl text-white">R$ 490,00 <span class="text-xs font-normal text-slate-400">/ Mês</span></p>
+                                </div>
+                            </div>
+
+                            <!-- PLANO SAAS ENTERPRISE -->
+                            <div class="bg-brand-dark p-5 rounded-xl border border-brand-border hover:border-brand-accent transition flex flex-col justify-between">
+                                <div class="space-y-2">
+                                    <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">GRANDES INDÚSTRIAS</span>
+                                    <h3 class="font-display font-bold text-lg text-white">SaaS Enterprise Custom</h3>
+                                    <p class="text-xs text-slate-400">Licenciamento de software autônomo para grandes plantas industriais.</p>
+                                    <ul class="text-xs text-slate-300 space-y-1.5 pt-2">
+                                        <li><i class="fa-solid fa-check text-brand-green mr-1"></i> Máquinas e Turnos Ilimitados</li>
+                                        <li><i class="fa-solid fa-check text-brand-green mr-1"></i> Análise de Pareto Automatizada</li>
+                                        <li><i class="fa-solid fa-check text-brand-green mr-1"></i> Instalação Local / Nuvem Privada</li>
+                                        <li><i class="fa-solid fa-check text-brand-green mr-1"></i> Suporte e Treinamento Dedicados</li>
+                                    </ul>
+                                </div>
+                                <div class="pt-4 border-t border-brand-border mt-4">
+                                    <p class="text-xs text-slate-500">Valor Sugerido sob Medida</p>
+                                    <p class="font-display font-bold text-xl text-white">R$ 1.990,00+ <span class="text-xs font-normal text-slate-400">/ Mês</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-brand-dark rounded-xl border border-brand-border space-y-2">
+                            <h4 class="text-xs font-bold text-white uppercase tracking-wider">Como vender este produto?</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Use esta versão local para fazer demonstrações ao vivo ao Diretor Industrial. Ofereça a plataforma como um "Bônus Tecnológico" na sua consultoria para monitorar as máquinas piloto do projeto. O cliente verá o resultado instantaneamente e aceitará pagar uma mensalidade de suporte ou licenciamento recorrente após a conclusão do projeto principal.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- NOTIFICAÇÕES (TOAST MODAL PERSONALIZADO) -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-brand-card border border-brand-accent px-6 py-4 rounded-xl text-slate-200 flex items-center gap-3 shadow-2xl transition duration-300 transform translate-y-20 opacity-0 z-50">
+        <i class="fa-solid fa-circle-check text-brand-green text-xl"></i>
+        <div>
+            <p id="toast-title" class="font-semibold text-sm">Sucesso</p>
+            <p id="toast-desc" class="text-xs text-slate-400">Registo guardado com sucesso.</p>
+        </div>
+    </div>
+
+    <script>
+        // ESTADO GLOBAL DA APLICAÇÃO (Guardado no LocalStorage para persistência de dados)
+        let appState = {
+            machines: [],
+            events: [],
+            plannedStops: [],
+            whyAnalysis: [],
+            whiteLabel: {
+                title: "SENSUS OEE",
+                subtitle: "Performance & Liderança",
+                initials: "RC",
+                vendor: "Renan Carvalho",
+                accentColor: "#06b6d4",
+                accentGlow: "rgba(6, 182, 212, 0.15)"
+            }
+        };
+
+        // MOCK DATA PARA EXEMPLO PRÁTICO INICIAL
+        const defaultState = {
+            machines: [
+                { id: "m1", name: "Torno CNC Haas ST-20", capacity: 8, shiftTime: 480 },
+                { id: "m2", name: "Injetora Plástica Engel 150T", capacity: 4, shiftTime: 480 }
+            ],
+            events: [
+                { id: "e1", machineId: "m1", category: "Quebra", duration: 45, pieces: 0, goodPieces: 3200, description: "Avaria elétrica no veio secundário." },
+                { id: "e2", machineId: "m1", category: "Setup", duration: 30, pieces: 0, goodPieces: 3200, description: "Troca de ferramenta para novo lote." },
+                { id: "e3", machineId: "m1", category: "Microparada", duration: 15, pieces: 0, goodPieces: 3200, description: "Ajuste manual de guias óticas." },
+                { id: "e4", machineId: "m1", category: "Velocidade", duration: 25, pieces: 0, goodPieces: 3200, description: "Operação com ferramenta gasta." },
+                { id: "e5", machineId: "m1", category: "Refugo", duration: 0, pieces: 42, goodPieces: 3200, description: "Desvio dimensional inicial." },
+                { id: "e6", machineId: "m2", category: "Quebra", duration: 90, pieces: 0, goodPieces: 1200, description: "Obstrução de canais de injeção." }
+            ],
+            plannedStops: [
+                { id: "ps1", machineId: "m1", type: "Refeição", duration: 60 }
+            ],
+            whyAnalysis: [
+                { id: "wa1", eventId: "e1", why1: "O torno parou bruscamente.", why2: "O motor do veio secundário sofreu sobrecarga.", why3: "Houve alta fricção nas guias.", why4: "Falta de lubrificação mecânica automática.", why5: "O filtro de óleo do lubrificador estava obstruído e não foi trocado na preventiva.", action: "Adicionar a troca do filtro no plano de preventiva mensal de 500 horas." }
+            ],
+            whiteLabel: {
+                title: "SENSUS OEE",
+                subtitle: "Performance & Liderança",
+                initials: "RC",
+                vendor: "Renan Carvalho",
+                accentColor: "#06b6d4",
+                accentGlow: "rgba(6, 182, 212, 0.15)"
+            }
+        };
+
+        // INICIALIZAÇÃO DO PROGRAMA
+        window.onload = function() {
+            const savedState = localStorage.getItem("sensus_oee_state");
+            if (savedState) {
+                appState = JSON.parse(savedState);
+                if (!appState.whiteLabel) appState.whiteLabel = defaultState.whiteLabel;
+                if (!appState.plannedStops) appState.plannedStops = [];
+                if (!appState.whyAnalysis) appState.whyAnalysis = [];
+            } else {
+                appState = defaultState;
+                localStorage.setItem("sensus_oee_state", JSON.stringify(appState));
+            }
+            applySavedWhiteLabel();
+            populateSelects();
+            renderMachineTable();
+            renderPlannedStopsTable();
+            renderHistoryTable();
+            calculateAllMetrics();
+            renderComparisonMetrics();
+            calculateFinancialWaste();
+            populateWhyLossSelect();
+            renderWhyTable();
+        };
+
+        // NAVEGAÇÃO ENTRE ABAS
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('text-brand-accent', 'bg-brand-accentGlow');
+                btn.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-800');
+            });
+
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('text-brand-accent', 'bg-brand-accentGlow');
+                activeBtn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-800');
+            }
+
+            if (tabId === 'comparativo') {
+                renderComparisonMetrics();
+            } else if (tabId === 'financeiro') {
+                calculateFinancialWaste();
+            } else if (tabId === 'acoes') {
+                populateWhyLossSelect();
+                renderWhyTable();
+            }
+        }
+
+        // PREENCHER OPÇÕES DE SELEÇÃO NOS MENUS
+        function populateSelects() {
+            const dashboardSelect = document.getElementById('dashboard-machine-select');
+            const formSelect = document.getElementById('form-machine');
+            const plannedStopSelect = document.getElementById('planned-stop-machine');
+            
+            dashboardSelect.innerHTML = "";
+            formSelect.innerHTML = "";
+            plannedStopSelect.innerHTML = "";
+
+            appState.machines.forEach(m => {
+                const opt1 = document.createElement('option');
+                opt1.value = m.id;
+                opt1.textContent = m.name;
+                dashboardSelect.appendChild(opt1);
+
+                const opt2 = document.createElement('option');
+                opt2.value = m.id;
+                opt2.textContent = m.name;
+                formSelect.appendChild(opt2);
+
+                const opt3 = document.createElement('option');
+                opt3.value = m.id;
+                opt3.textContent = m.name;
+                plannedStopSelect.appendChild(opt3);
+            });
+        }
+
+        // CONTROLAR INPUTS DO FORMULÁRIO COM BASE NA CATEGORIA SELECIONADA
+        function toggleFormInputs() {
+            const cat = document.getElementById('form-category').value;
+            const divDuration = document.getElementById('div-duration');
+            const divPieces = document.getElementById('div-pieces');
+
+            if (cat === 'Refugo') {
+                divDuration.classList.add('hidden');
+                divPieces.classList.remove('hidden');
+            } else {
+                divDuration.classList.remove('hidden');
+                divPieces.classList.add('hidden');
+            }
+        }
+
+        // ADICIONAR NOVA MÁQUINA PILOTO
+        function handleMachineSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('machine-name').value;
+            const capacity = parseInt(document.getElementById('machine-capacity').value);
+            const shiftTime = parseInt(document.getElementById('machine-shift-time').value);
+
+            const newMachine = {
+                id: "m_" + Date.now(),
+                name,
+                capacity,
+                shiftTime
+            };
+
+            appState.machines.push(newMachine);
+            localStorage.setItem("sensus_oee_state", JSON.stringify(appState));
+            
+            showToast("Máquina Ativada", `${name} foi adicionada ao programa.`);
+            document.getElementById('machine-form').reset();
+            
+            populateSelects();
+            renderMachineTable();
+            calculateAllMetrics();
+            renderComparisonMetrics();
+        }
+
+        // RENDERIZAR TABELA DE CONFIGURAÇÃO DE MÁQUINAS
+        function renderMachineTable() {
+            const tbody = document.getElementById('machine-table-body');
+            tbody.innerHTML = "";
+
+            appState.machines.forEach(m => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="py-4 text-white font-medium">${m.name}</td>
+                    <td class="py-4 text-slate-300">${m.capacity} peças/min</td>
+                    <td class="py-4 text-slate-300">${m.shiftTime} min</td>
+                    <td class="py-4 text-right">
+                        <button onclick="removeMachine('${m.id}')" class="text-red-400 hover:text-red-500 transition px-2 py-1">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // REMOVER MÁQUINA
+        function removeMachine(id) {
+            appState.machines = appState.machines.filter(m => m.id !== id);
+            appState.events = appState.events.filter(e => e.machineId !== id);
+            appState.plannedStops = appState.plannedStops.filter(ps => ps.machineId !== id);
+            localStorage.setItem("sensus_oee_state", JSON.stringify(appState));
+            populateSelects();
+            renderMachineTable();
+            renderPlannedStopsTable();
+            renderHistoryTable();
+            calculateAllMetrics();
+            renderComparisonMetrics();
+            showToast("Máquina Removida", "Os dados associados foram apagados.");
+        }
+
+        // ADICIONAR NOVA PARAGEM PLANEADA
+        function handlePlannedStopSubmit(event) {
+            event.preventDefault();
+            const machineId = document.getElementById('planned-stop-machine').value;
+            const type = document.getElementById('planned-stop-type').value;
+            const duration = parseInt(document.getElementById('planned-stop-duration').value);
+
+            const newStop = {
+                id: "ps_" + Date.now(),
+                machineId,
+                type,
+                duration
+            };
+
+            appState.plannedStops.push(newStop);
+            localStorage.setItem("sensus_oee_state", JSON.stringify(appState));
+
+            showToast("Evento Planeado Guardado", "Tempo será descontado nos cálculos do OEE.");
+            document.getElementById('planned-stop-form').reset();
+
+            renderPlannedStopsTable();
+            calculateAllMetrics();
+        }
+
+        // RENDERIZAR TABELA DE PARAGENS PLANEADAS
+        function renderPlannedStopsTable() {
+            const tbody = document.getElementById('planned-stops-table-body');
+            tbody.innerHTML = "";
+
+            appState.plannedStops.forEach(ps => {
+                const mName = appState.machines.find(m => m.id === ps.machineId)?.name || "Máquina Eliminada";
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="py-3 text-white font-medium">${mName}</td>
+                    <td class="py-3 text-slate-300">${ps.type}</td>
+                    <td class="py-3 text-slate-300 font-mono">${ps.duration} min</td>
+                    <td class="py-3 text-right">
+                        <button onclick="removePlannedStop('${ps.id}')" class="text-red-400 hover:text-red-500 transition px-2">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // REMOVER PARAGEM PLANEADA
+        function removePlannedStop(id) {
+            appState.plannedStops = appState.plannedStops.filter(ps => ps.id !== id);
+            localStorage.setItem("sensus_oee_state", JSON.stringify(appState));
+            renderPlannedStopsTable();
+            calculateAllMetrics();
+            showToast("Removido", "Tempo de paragem planeada restabelecido.");
+        }
+
+        // REGISTO RÁPIDO DO TURNO PERFEITO (100% OEE / SEM OCORRÊNCIAS)
+        function quickRegisterPerfectRun() {
+            const selectedMachineId = document.getElementById('dashboard-machine-select').value;
+            if (!selectedMachineId) {
+                showToast("Ativo não selecionado", "Selecione uma máquina no filtro primeiro.");
+                return;
+            }
+
+            const m = appState.machines.find(machine => machine.id === selectedMachineId);
+            if (!m) return;
+
+            // Remove todos os eventos / paragens registados no turno para esta máquina
+            appState.events = appState.events.filter(e => e.machineId !== selectedMachineId);
+
+            // Calcula a produção de peças perfeitas baseada no tempo do turno e capacidade nominal
+            const perfectPieces = m.shiftTime * m.capacity;
+
+            // Regista um evento de "Produção Normal" com 0 paragens e 100% de aproveitamento de qualidade
+            const newEvent = {
+                id: "e_" + Date.now(),
+                machineId: selectedMachineId,
+                category: "Normal",
+                duration: 0,
+                pieces: 0,
+                goodPieces: perfectPieces,
+                description: "Turno perfeito registado. Operação correu em conformidade absoluta, sem perdas."
+            };
+
+            appState.events.push(newEvent);
+            localStorage.setItem("sensus_oee_state", JSON.stringify(appState));
+
+            showToast("Excelente!", "Turno Perfeito registado! OEE calibrado para 100%.");
+
+            // Recalcula todos os dashboards e tabelas em tempo real
+            calculateAllMetrics();
+            renderHistoryTable();
+            renderComparisonMetrics();
+            calculateFinancialWaste();
+            populateWhyLossSelect();
+        }
+
+        // SUBMETER REGISTO DE EVENTO OPERACIONAL
+        function handleLossSubmit(event) {
+            event.preventDefault();
+            const machineId = document.getElementById('form-machine').value;
+            const category = document.getElementById('form-category').value;
+            const duration = parseInt(document.getElementById('form-duration').value) || 0;
+            const pieces = parseInt(document.getElementById('form-pieces').value) || 0;
+            const goodPieces = parseInt(document.getElementById('form-good-pieces').value) || 0;
+            const description = document.getElementById('form-description').value;
+
+            // Se for do tipo "Normal", ajustamos para simular produção ideal
+            let finalGoodPieces = goodPieces;
+            if (category === "Normal") {
+                const m = appState.machines.find(mach => mach.id === machineId);
+                if (m) {
+                    finalGoodPieces = m.shiftTime * m.capacity;
+                }
+            }
+
+            const newEvent = {
+                id: "e_" + Date.now(),
+                machineId,
+                category,
+                duration: (category === 'Refugo' || category === 'Normal') ? 0 : duration,
+                pieces: category === 'Refugo' ? pieces : 0,
+                goodPieces: finalGoodPieces,
+                description: category === 'Normal' && !description ? "Operação normal e contínua no turno." : description
+            };
+
+            appState.events.push(newEvent);
+            localStorage.setItem("sensus_oee_state", JSON.stringify(appState));
+
+            showToast("Registo Guardado", "Dados de eficiência atualizados.");
+            document.getElementById('loss-form').reset();
+            
+            renderHistoryTable();
+            calculateAllMetrics();
+            switchTab('dashboard');
+        }
+
+        // RENDERIZAR TABELA DE HISTÓRICO
+        function renderHistoryTable() {
+            const tbody = document.getElementById('history-table-body');
+            tbody.innerHTML = "";
+
+            appState.events.forEach(e => {
+                const mName = appState.machines.find(m => m.id === e.machineId)?.name || "Máquina Eliminada";
+                
+                let metric = "Qualidade";
+                if (e.category === "Quebra" || e.category === "Setup") metric = "Disponibilidade";
+                if (e.category === "Microparada" || e.category === "Velocidade") metric = "Desempenho";
+                if (e.category === "Normal") metric = "Excelente (Sem Perdas)";
+
+                const valDisplay = e.category === "Refugo" ? `${e.pieces} pçs` : (e.category === "Normal" ? "100%" : `${e.duration} min`);
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="py-4 text-white font-medium">${mName}</td>
+                    <td class="py-4 text-slate-300">
+                        <span class="px-2 py-1 rounded bg-slate-800 text-xs text-brand-accent">${e.category}</span>
+                    </td>
+                    <td class="py-4 text-slate-300">${metric}</td>
+                    <td class="py-4 text-slate-300 font-mono">${valDisplay}</td>
+                    <td class="py-4 text-slate-400 text-sm max-w-xs truncate">${e.description}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // LIMPAR HISTÓRICO TOTAL
+        function clearAllData() {
+            appState.events = [];
+            appState.whyAnalysis = [];
+            localStorage.setItem("sensus_oee_state", JSON.stringify(appState));
+            renderHistoryTable();
+            calculateAllMetrics();
+            renderComparisonMetrics();
+            renderWhyTable();
+            populateWhyLossSelect();
+            showToast("Histórico Redefinido", "O banco de dados de eficiência foi limpo.");
+        }
+
+        // EXPORTAÇÃO PARA ARQUIVO CSV COMERCIAL
+        function exportToCSV() {
+            if (appState.events.length === 0) {
+                showToast("Erro ao Exportar", "Não existem dados disponíveis para exportação.");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Ativo,Categoria,Metrica,Duração/Peças,Descrição\n";
+
+            appState.events.forEach(e => {
+                const mName = appState.machines.find(m => m.id === e.machineId)?.name || "Máquina Eliminada";
+                let metric = "Qualidade";
+                if (e.category === "Quebra" || e.category === "Setup") metric = "Disponibilidade";
+                if (e.category === "Microparada" || e.category === "Velocidade") metric = "Desempenho";
+                if (e.category === "Normal") metric = "Produção Excelente";
+                
+                const valDisplay = e.category === "Refugo" ? `${e.pieces} peças` : (e.category === "Normal" ? "100% Eficiente" : `${e.duration} minutos`);
+                const cleanedDescription = e.description.replace(/,/g, " ");
+
+                csvContent += `"${mName}","${e.category}","${metric}","${valDisplay}","${cleanedDescription}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `relatorio_oee_${Date.now()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast("Relatório Exportado", "Ficheiro CSV baixado com sucesso.");
+        }
+
+        // CÁLCULO GERAL DO OEE E PILARES (SUSTENTANDO PARAGENS PLANEADAS)
+        function calculateAllMetrics() {
+            const selectedMachineId = document.getElementById('dashboard-machine-select').value;
+            if (!selectedMachineId) {
+                resetGauges();
+                return;
+            }
+
+            const m = appState.machines.find(m => m.id === selectedMachineId);
+            if (!m) return;
+
+            // Filtra os eventos da máquina atual
+            const machineEvents = appState.events.filter(e => e.machineId === selectedMachineId);
+            const machinePlannedStops = appState.plannedStops.filter(ps => ps.machineId === selectedMachineId);
+
+            // 1. CÁLCULO DE DISPONIBILIDADE (Com exclusão matemática das paragens planeadas)
+            const totalShiftTime = m.shiftTime; // Tempo Calendário Inicial
+            const plannedDownTime = machinePlannedStops.reduce((acc, curr) => acc + curr.duration, 0);
+
+            // Tempo de carregamento (Tempo planeado ajustado)
+            const plannedLoadingTime = totalShiftTime - plannedDownTime;
+
+            const stopEvents = machineEvents.filter(e => e.category === 'Quebra' || e.category === 'Setup');
+            const totalDownTime = stopEvents.reduce((acc, curr) => acc + curr.duration, 0);
+
+            const actualOperatingTime = plannedLoadingTime - totalDownTime;
+            
+            const availability = plannedLoadingTime > 0 
+                ? (actualOperatingTime / plannedLoadingTime) 
+                : 0;
+
+            // 2. CÁLCULO DE DESEMPENHO (PERFORMANCE)
+            // Busca o último registo de peças boas produzidas no turno ou calcula dinamicamente
+            const lastEvent = machineEvents[machineEvents.length - 1];
+            const goodPiecesProduced = lastEvent ? lastEvent.goodPieces : (m.shiftTime * m.capacity);
+
+            // Capacidade Teórica na produção útil real
+            const theoreticalCapacity = actualOperatingTime * m.capacity;
+            const performance = theoreticalCapacity > 0 
+                ? (goodPiecesProduced / theoreticalCapacity) 
+                : 0;
+
+            // 3. CÁLCULO DE QUALIDADE
+            const scrapEvents = machineEvents.filter(e => e.category === 'Refugo' || e.category === 'Startup');
+            const totalScrap = scrapEvents.reduce((acc, curr) => acc + curr.pieces, 0);
+
+            const totalProduced = goodPiecesProduced + totalScrap;
+            const quality = totalProduced > 0 
+                ? (goodPiecesProduced / totalProduced) 
+                : 0;
+
+            // 4. OEE TOTAL
+            const oee = availability * performance * quality;
+
+            // ATUALIZAR GRÁFICOS E ENCRÃS (Formatando para Percentagens)
+            updateDashboardUI(availability, performance, quality, oee);
+            renderPareto(machineEvents);
+            renderInsights(availability, performance, quality);
+        }
+
+        // RENDERIZAR TABELA COMPARATIVA DE OEE (BENCHMARKING)
+        function renderComparisonMetrics() {
+            const container = document.getElementById('comparison-bars-container');
+            container.innerHTML = "";
+
+            if (appState.machines.length === 0) {
+                container.innerHTML = "<p class='text-sm text-slate-500'>Nenhuma máquina configurada para comparação.</p>";
+                return;
+            }
+
+            appState.machines.forEach(m => {
+                const machineEvents = appState.events.filter(e => e.machineId === m.id);
+                const machinePlannedStops = appState.plannedStops.filter(ps => ps.machineId === m.id);
+
+                const plannedDownTime = machinePlannedStops.reduce((acc, curr) => acc + curr.duration, 0);
+                const plannedLoadingTime = m.shiftTime - plannedDownTime;
+
+                const totalDownTime = machineEvents
+                    .filter(e => e.category === 'Quebra' || e.category === 'Setup')
+                    .reduce((acc, curr) => acc + curr.duration, 0);
+
+                const actualOperatingTime = plannedLoadingTime - totalDownTime;
+                const availability = plannedLoadingTime > 0 ? (actualOperatingTime / plannedLoadingTime) : 0;
+
+                const lastEvent = machineEvents[machineEvents.length - 1];
+                const goodPiecesProduced = lastEvent ? lastEvent.goodPieces : (m.shiftTime * m.capacity);
+
+                const theoreticalCapacity = actualOperatingTime * m.capacity;
+                const performance = theoreticalCapacity > 0 ? (goodPiecesProduced / theoreticalCapacity) : 0;
+
+                const totalScrap = machineEvents
+                    .filter(e => e.category === 'Refugo' || e.category === 'Startup')
+                    .reduce((acc, curr) => acc + curr.pieces, 0);
+
+                const totalProduced = goodPiecesProduced + totalScrap;
+                const quality = totalProduced > 0 ? (goodPiecesProduced / totalProduced) : 0;
+
+                const oee = Math.round((availability * performance * quality) * 100);
+                const boundedOEE = Math.min(Math.max(oee, 0), 100);
+
+                // Determina cor de status
+                let statusColor = "from-red-500 to-rose-600";
+                if (boundedOEE >= 85) statusColor = "from-emerald-500 to-green-600";
+                else if (boundedOEE >= 60) statusColor = "from-cyan-500 to-blue-500";
+
+                const barDiv = document.createElement('div');
+                barDiv.className = "bg-brand-dark p-5 rounded-xl border border-brand-border space-y-2";
+                barDiv.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-display font-bold text-white">${m.name}</span>
+                        <span class="font-mono font-bold text-lg text-white">${boundedOEE}% OEE</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-4 rounded-full overflow-hidden">
+                        <div class="bg-gradient-to-r ${statusColor} h-full transition-all duration-700" style="width: ${boundedOEE}%"></div>
+                    </div>
+                `;
+                container.appendChild(barDiv);
+            });
+        }
+
+        // CÁLCULO DE DESPERDÍCIO FINANCEIRO DINÂMICO
+        function calculateFinancialWaste() {
+            const costDownHour = parseFloat(document.getElementById('cost-down-hour').value) || 0;
+            const costSpeedHour = parseFloat(document.getElementById('cost-speed-hour').value) || 0;
+            const costScrapUnit = parseFloat(document.getElementById('cost-scrap-unit').value) || 0;
+
+            let totalDownMinutes = 0;
+            let totalSpeedMinutes = 0;
+            let totalScrapUnits = 0;
+
+            appState.events.forEach(e => {
+                if (e.category === 'Quebra' || e.category === 'Setup') {
+                    totalDownMinutes += e.duration;
+                } else if (e.category === 'Microparada' || e.category === 'Velocidade') {
+                    totalSpeedMinutes += e.duration;
+                } else if (e.category === 'Refugo' || e.category === 'Startup') {
+                    totalScrapUnits += e.pieces;
+                }
+            });
+
+            const downCost = (totalDownMinutes / 60) * costDownHour;
+            const speedCost = (totalSpeedMinutes / 60) * costSpeedHour;
+            const scrapCost = totalScrapUnits * costScrapUnit;
+            const totalCost = downCost + speedCost + scrapCost;
+
+            const formatCurrency = val => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            const container = document.getElementById('financial-waste-cards');
+            container.innerHTML = `
+                <!-- Disponibilidade -->
+                <div class="bg-brand-dark p-5 rounded-xl border border-brand-border flex flex-col justify-between">
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Desperdício por Paragens</h4>
+                        <p class="text-xs text-slate-500 mb-4">Baseado em minutos acumulados de Quebra & Setup.</p>
+                    </div>
+                    <div>
+                        <p class="font-mono text-xs text-slate-400 mb-1">Tempo Parado: ${totalDownMinutes} min</p>
+                        <p class="font-display font-bold text-2xl text-red-400">${formatCurrency(downCost)}</p>
+                    </div>
+                </div>
+
+                <!-- Desempenho -->
+                <div class="bg-brand-dark p-5 rounded-xl border border-brand-border flex flex-col justify-between">
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Perda por Desempenho</h4>
+                        <p class="text-xs text-slate-500 mb-4">Baseado em minutos de ciclo lento & microparagens.</p>
+                    </div>
+                    <div>
+                        <p class="font-mono text-xs text-slate-400 mb-1">Tempo Lento: ${totalSpeedMinutes} min</p>
+                        <p class="font-display font-bold text-2xl text-red-400">${formatCurrency(speedCost)}</p>
+                    </div>
+                </div>
+
+                <!-- Qualidade -->
+                <div class="bg-brand-dark p-5 rounded-xl border border-brand-border flex flex-col justify-between">
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Custo de Refugo</h4>
+                        <p class="text-xs text-slate-500 mb-4">Baseado em unidades rejeitadas no processo de startup ou conformidade.</p>
+                    </div>
+                    <div>
+                        <p class="font-mono text-xs text-slate-400 mb-1">Peças Perdidas: ${totalScrapUnits} pçs</p>
+                        <p class="font-display font-bold text-2xl text-red-400">${formatCurrency(scrapCost)}</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('total-financial-loss').textContent = formatCurrency(totalCost);
+        }
+
+        // PREENCHER DROPDOWN DOS 5 PORQUÊS
+        function populateWhyLossSelect() {
+            const select = document.getElementById('why-loss-select');
+            select.innerHTML = '<option value="">-- Selecione uma Ocorrência --</option>';
+
+            // Filtrar apenas eventos com duração (quebras ou setups)
+            const stopEvents = appState.events.filter(e => e.category === 'Quebra' || e.category === 'Setup');
+            stopEvents.forEach(e => {
+                const mName = appState.machines.find(m => m.id === e.machineId)?.name || "Máquina";
+                const analyzed = appState.whyAnalysis.some(wa => wa.eventId === e.id) ? " [Analisado]" : "";
+                const opt = document.createElement('option');
+                opt.value = e.id;
+                opt.textContent = `${mName} - ${e.category} (${e.duration} min)${analyzed}`;
+                select.appendChild(opt);
+            });
+        }
+
+        // CARREGAR ANÁLISE SELECIONADA DO STORAGE OU LIMPAR CAMPOS
+        function loadWhyAnalysis() {
+            const eventId = document.getElementById('why-loss-select').value;
+            const form = document.getElementById('why-form');
+            
+            if (!eventId) {
+                form.classList.add('hidden');
+                return;
+            }
+
+            form.classList.remove('hidden');
+            form.reset();
+
+            const existing = appState.whyAnalysis.find(wa => wa.eventId === eventId);
+            if (existing) {
+                document.getElementById('why-1').value = existing.why1;
+                document.getElementById('why-2').value = existing.why2;
+                document.getElementById('why-3').value = existing.why3;
+                document.getElementById('why-4').value = existing.why4;
+                document.getElementById('why-5').value = existing.why5;
+                document.getElementById('why-action').value = existing.action;
+            }
+        }
+
+        // SUBMETER ANÁLISE DOS 5 PORQUÊS
+        function handleWhySubmit(event) {
+            event.preventDefault();
+            const eventId = document.getElementById('why-loss-select').value;
+            if (!eventId) return;
+
+            const why1 = document.getElementById('why-1').value;
+            const why2 = document.getElementById('why-2').value;
+            const why3 = document.getElementById('why-3').value;
+            const why4 = document.getElementById('why-4').value;
+            const why5 = document.getElementById('why-5').value;
+            const action = document.getElementById('why-action').value;
+
+            // Remover anterior se já existir
+            appState.whyAnalysis = appState.whyAnalysis.filter(wa => wa.eventId !== eventId);
+
+            const newAnalysis = {
+                id: "wa_" + Date.now(),
+                eventId,
+                why1,
+                why2,
+                why3,
+                why4,
+                why5,
+                action
+            };
+
+            appState.whyAnalysis.push(newAnalysis);
+            localStorage.setItem("sensus_oee_state", JSON.stringify(appState));
+
+            showToast("Análise de Causa Salva", "Ação corretiva registrada com sucesso.");
+            document.getElementById('why-form').classList.add('hidden');
+            document.getElementById('why-loss-select').value = "";
+            
+            renderWhyTable();
+            populateWhyLossSelect();
+        }
+
+        // RENDERIZAR TABELA DOS 5 PORQUÊS
+        function renderWhyTable() {
+            const tbody = document.getElementById('why-table-body');
+            tbody.innerHTML = "";
+
+            if (appState.whyAnalysis.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-slate-500">Nenhuma causa raiz cadastrada no sistema.</td></tr>';
+                return;
+            }
+
+            appState.whyAnalysis.forEach(wa => {
+                const associatedEvent = appState.events.find(e => e.id === wa.eventId);
+                const mName = associatedEvent 
+                    ? (appState.machines.find(m => m.id === associatedEvent.machineId)?.name || "Ativo")
+                    : "Evento Eliminado";
+                const eventDisplay = associatedEvent 
+                    ? `${mName} (${associatedEvent.category})`
+                    : "Desconhecido";
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="py-3 text-white font-medium">${eventDisplay}</td>
+                    <td class="py-3 text-slate-300 font-semibold text-cyan-400">${wa.why5}</td>
+                    <td class="py-3 text-slate-400 max-w-xs truncate" title="${wa.action}">${wa.action}</td>
+                    <td class="py-3 text-right">
+                        <button onclick="removeWhyAnalysis('${wa.id}')" class="text-red-400 hover:text-red-500 transition px-2">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // REMOVER ANÁLISE 5 PORQUÊS
+        function removeWhyAnalysis(id) {
+            appState.whyAnalysis = appState.whyAnalysis.filter(wa => wa.id !== id);
+            localStorage.setItem("sensus_oee_state", JSON.stringify(appState));
+            renderWhyTable();
+            populateWhyLossSelect();
+            showToast("Análise Removida", "O registo de causa raiz foi apagado.");
+        }
+
+        // RESET GERAL DE INDICADORES QUANDO SEM DADOS
+        function resetGauges() {
+            updateDashboardUI(0, 0, 0, 0);
+            document.getElementById('pareto-container').innerHTML = "<p class='text-sm text-slate-500'>Sem dados para calcular a Pareto das perdas.</p>";
+        }
+
+        // ATUALIZAR INTERFACE OPERACIONAL
+        function updateDashboardUI(disp, perf, qual, oee) {
+            // Conversão em percentual limitado
+            const formatPct = val => Math.min(Math.max(Math.round(val * 100), 0), 100);
+
+            const dVal = formatPct(disp);
+            const pVal = formatPct(perf);
+            const qVal = formatPct(qual);
+            const oeeVal = formatPct(oee);
+
+            // OEE Gauge Circular
+            const oeeCircle = document.getElementById('oee-progress');
+            const oeeValue = document.getElementById('oee-value');
+            
+            // Fórmula do comprimento do círculo: 2 * PI * r = 2 * 3.1415 * 40 = 251.2
+            const offset = 251.2 - (oeeVal / 100) * 251.2;
+            oeeCircle.style.strokeDashoffset = offset;
+            oeeValue.textContent = `${oeeVal}%`;
+
+            // Pilares de Barras
+            document.getElementById('availability-value').textContent = `${dVal}%`;
+            document.getElementById('availability-bar').style.width = `${dVal}%`;
+
+            document.getElementById('performance-value').textContent = `${pVal}%`;
+            document.getElementById('performance-bar').style.width = `${pVal}%`;
+
+            document.getElementById('quality-value').textContent = `${qVal}%`;
+            document.getElementById('quality-bar').style.width = `${qVal}%`;
+
+            // ATUALIZAÇÃO DO STATUS DINÂMICO DE SEGURANÇA / PROCESSO
+            const statusBadge = document.getElementById('machine-status-badge');
+            if (statusBadge) {
+                if (oeeVal >= 85) {
+                    statusBadge.className = "px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                    statusBadge.innerHTML = `<i class="fa-solid fa-circle-check animate-pulse"></i> Operação Excelente (World Class)`;
+                } else if (oeeVal >= 65) {
+                    statusBadge.className = "px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-yellow-500/10 text-yellow-400 border border-yellow-500/20";
+                    statusBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Operação Estável (Abaixo da Meta)`;
+                } else {
+                    statusBadge.className = "px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-brand-red/10 text-brand-red border border-brand-red/20";
+                    statusBadge.innerHTML = `<i class="fa-solid fa-circle-exclamation animate-bounce"></i> Alerta de Perdas Críticas`;
+                }
+            }
+        }
+
+        // RENDERIZAR PARETO DAS 6 PERDAS
+        function renderPareto(events) {
+            const container = document.getElementById('pareto-container');
+            container.innerHTML = "";
+
+            const categories = ["Quebra", "Setup", "Microparada", "Velocidade", "Refugo", "Startup"];
+            
+            // Agrupamento de perdas acumuladas em minutos/unidades equivalentes
+            const lossSummary = categories.map(cat => {
+                const catEvents = events.filter(e => e.category === cat);
+                const sumValue = cat === 'Refugo' 
+                    ? catEvents.reduce((acc, curr) => acc + curr.pieces, 0)
+                    : catEvents.reduce((acc, curr) => acc + curr.duration, 0);
+                
+                return { category: cat, value: sumValue };
+            }).sort((a, b) => b.value - a.value);
+
+            const maxLoss = Math.max(...lossSummary.map(l => l.value), 1);
+
+            lossSummary.forEach(loss => {
+                const pct = Math.round((loss.value / maxLoss) * 100);
+                const unit = loss.category === 'Refugo' ? 'pçs' : 'min';
+
+                const barDiv = document.createElement('div');
+                barDiv.className = "flex flex-col gap-1";
+                barDiv.innerHTML = `
+                    <div class="flex justify-between text-sm">
+                        <span class="font-medium text-slate-300">${loss.category}</span>
+                        <span class="font-mono text-brand-accent">${loss.value} ${unit}</span>
+                    </div>
+                    <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-brand-border">
+                        <div class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full transition-all duration-500" style="width: ${pct}%"></div>
+                    </div>
+                `;
+                container.appendChild(barDiv);
+            });
+        }
+
+        // RECOMENDAÇÕES DA LIDERANÇA DE PROCESSO
+        function renderInsights(disp, perf, qual) {
+            const list = document.getElementById('insights-list');
+            list.innerHTML = "";
+
+            const insights = [];
+
+            // Regras lógicas baseadas em OEE real
+            if (disp < 0.85) {
+                insights.push({
+                    title: "Implementar SMED",
+                    desc: "Sua Disponibilidade está sob pressão. Foque no mapeamento e padronização das trocas de moldes e ferramentas."
+                });
+                insights.push({
+                    title: "Ações de TPM no Posto",
+                    desc: "Envolva o operador na manutenção básica para mitigar paragens bruscas e avarias graves."
+                });
+            }
+            if (perf < 0.90) {
+                insights.push({
+                    title: "Redução de Microparagens",
+                    desc: "Ajuste de fotocélulas, guias ou calibração de sensores reduzem perdas silenciosas que atacam a cadência."
+                });
+            }
+            if (qual < 0.98) {
+                insights.push({
+                    title: "Auditoria na Fonte",
+                    desc: "Desenvolva mecanismos de Poka-Yoke físico ou verificação ao pé de máquina para eliminar desperdício de refugo."
+                });
+            }
+
+            if (insights.length === 0) {
+                insights.push({
+                    title: "Fábrica em Alta Performance",
+                    desc: "Os indicadores estão de parabéns. Prossiga com auditorias Kamishibai constantes para reter o recorde."
+                });
+            }
+
+            insights.forEach(ins => {
+                const item = document.createElement('div');
+                item.className = "border-l-4 border-brand-accent pl-3 py-1 custom-accent-border";
+                item.innerHTML = `
+                    <h4 class="font-bold text-sm text-white">${ins.title}</h4>
+                    <p class="text-xs text-slate-400 mt-1">${ins.desc}</p>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // CONTROLAR DINAMICAMENTE O WHITE-LABEL (PORTAL COMERCIAL)
+        function updateWhiteLabel() {
+            const title = document.getElementById('setup-app-title').value;
+            const subtitle = document.getElementById('setup-app-subtitle').value;
+            const initials = document.getElementById('setup-app-initials').value;
+            const vendor = document.getElementById('setup-app-vendor').value;
+
+            // Atualiza elementos em tempo real
+            document.getElementById('app-meta-title').textContent = `${title} - Plataforma Industrial`;
+            document.getElementById('app-header-title').textContent = title;
+            document.getElementById('app-header-subtitle').textContent = subtitle;
+            document.getElementById('app-logo').textContent = initials;
+            document.getElementById('sidebar-vendor').textContent = vendor;
+            document.getElementById('sidebar-sub-vendor').textContent = subtitle;
+            document.getElementById('insight-sign-name').textContent = `— ${vendor}`;
+        }
+
+        // ALTERAR COR DE DESTAQUE DINAMICAMENTE
+        function changeThemeColor(accent, glow) {
+            appState.whiteLabel.accentColor = accent;
+            appState.whiteLabel.accentGlow = glow;
+
+            document.documentElement.style.setProperty('--primary-accent', accent);
+            document.documentElement.style.setProperty('--primary-glow', glow);
+
+            showToast("Cor Atualizada", "O tema visual foi alterado.");
+        }
+
+        // SALVAR WHITE-LABEL NO LOCAL STORAGE
+        function saveWhiteLabelConfig() {
+            appState.whiteLabel.title = document.getElementById('setup-app-title').value;
+            appState.whiteLabel.subtitle = document.getElementById('setup-app-subtitle').value;
+            appState.whiteLabel.initials = document.getElementById('setup-app-initials').value;
+            appState.whiteLabel.vendor = document.getElementById('setup-app-vendor').value;
+
+            localStorage.setItem("sensus_oee_state", JSON.stringify(appState));
+            showToast("Layout Configurado", "Este padrão de layout foi salvo como padrão comercial.");
+        }
+
+        // APLICAR WHITE-LABEL SALVO AO RECARREGAR
+        function applySavedWhiteLabel() {
+            const wl = appState.whiteLabel;
+            document.getElementById('setup-app-title').value = wl.title;
+            document.getElementById('setup-app-subtitle').value = wl.subtitle;
+            document.getElementById('setup-app-initials').value = wl.initials;
+            document.getElementById('setup-app-vendor').value = wl.vendor;
+
+            changeThemeColor(wl.accentColor, wl.accentGlow);
+            updateWhiteLabel();
+        }
+
+        // EXIBIÇÃO DE TOAST NOTIFICATION
+        function showToast(title, desc) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-desc').textContent = desc;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3000);
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensus OEE | Painel Industrial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { background-color: #020617; font-family: 'Inter', sans-serif; color: white; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. TELA DE LOGIN (O "Portão") -->
+    <div id="login-screen" class="fixed inset-0 flex items-center justify-center bg-[#020617] z-50">
+        <div class="p-8 bg-[#0f172a] rounded-2xl border border-slate-800 text-center w-80 shadow-2xl">
+            <h2 class="mb-6 font-bold text-lg text-cyan-500 tracking-widest">SENSUS OEE</h2>
+            <input type="password" id="password" placeholder="Digite a senha" class="bg-slate-900 border border-slate-700 p-3 rounded-lg mb-4 w-full text-center text-white outline-none focus:border-cyan-500">
+            <button onclick="checkPassword()" class="bg-cyan-600 hover:bg-cyan-700 transition px-6 py-2 rounded-lg w-full font-bold">ENTRAR</button>
+            <p id="error" class="text-red-500 text-xs mt-4 hidden">Senha incorreta.</p>
+        </div>
+    </div>
+
+    <!-- 2. PAINEL DE CONTROLE (Invisível até o login) -->
+    <div id="dashboard" class="hidden min-h-screen">
+        
+        <!-- HEADER -->
+        <header class="bg-[#0f172a] border-b border-slate-800 px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-500 flex items-center justify-center text-[#020617] font-bold">RC</div>
+                <div>
+                    <h1 class="font-bold text-xl">SENSUS <span class="text-cyan-500">OEE</span></h1>
+                    <p class="text-xs text-cyan-500 uppercase font-semibold">Consultoria Industrial</p>
+                </div>
+            </div>
+            <button onclick="logout()" class="text-xs bg-slate-800 hover:bg-red-900/30 text-slate-400 hover:text-red-400 px-4 py-2 rounded-full transition">
+                <i class="fa-solid fa-right-from-bracket mr-2"></i>Sair
+            </button>
+        </header>
+
+        <!-- GRID PRINCIPAL -->
+        <main class="p-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="bg-[#0f172a] p-6 rounded-2xl border border-slate-800 text-center">
+                    <p class="text-slate-400 text-xs uppercase mb-4">OEE Global</p>
+                    <p class="text-4xl font-bold">75%</p>
+                </div>
+                <div class="bg-[#0f172a] p-6 rounded-2xl border border-slate-800">
+                    <p class="text-slate-400 text-xs uppercase">Disponibilidade</p>
+                    <p class="text-2xl font-bold mt-2">94.2%</p>
+                </div>
+                <div class="bg-[#0f172a] p-6 rounded-2xl border border-slate-800">
+                    <p class="text-slate-400 text-xs uppercase">Performance</p>
+                    <p class="text-2xl font-bold mt-2">88.5%</p>
+                </div>
+                <div class="bg-[#0f172a] p-6 rounded-2xl border border-slate-800">
+                    <p class="text-slate-400 text-xs uppercase">Qualidade</p>
+                    <p class="text-2xl font-bold mt-2">99.1%</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const SENHA_MESTRA = "1234";
+
+        function checkPassword() {
+            const pass = document.getElementById('password').value;
+            if(pass === SENHA_MESTRA) { 
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('dashboard').classList.remove('hidden');
+            } else {
+                document.getElementById('error').classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            // Limpa o campo e volta para a tela de login
+            document.getElementById('password').value = "";
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
