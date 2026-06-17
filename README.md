@@ -14,12 +14,13 @@
 
     // 1. Configuração do Firebase
     const firebaseConfig = {
-        apiKey: "SUA_API_KEY_FIREBASE",
-        authDomain: "SEU_PROJETO.firebaseapp.com",
-        projectId: "SEU_PROJETO",
-        storageBucket: "SEU_PROJETO.appspot.com",
-        messagingSenderId: "ID",
-        appId: "ID"
+        apiKey : "AIzaSyAv07hNWQ4Z4dL2Iq4Z1hLg05PwBtcSRnY" , 
+  authDomain : "sensusoee-ebea2.firebaseapp.com" , 
+  ID do projeto : "sensusoee-ebea2" , 
+  bucket de armazenamento : "sensusoee-ebea2.firebasestorage.app" , 
+  messagingSenderId : " 768590307204" 
+  appId : "1:768590307204:web:7209ab20e865824bcb87d1" , 
+  ID da medição : "G-696GQ7JX2C"
     };
 
     const app = initializeApp(firebaseConfig);
